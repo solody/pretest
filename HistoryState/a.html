@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Page A</title>
+<script src="http://cdn.bootcss.com/jquery/2.1.4/jquery.min.js"></script>
+</head>
+<body>
+
+<p>
+<input type="button" id="btn_page1" value="第一页">
+<input type="button" id="btn_page2" value="第二页">
+<input type="button" id="btn_page3" value="第三页">
+</p>
+
+<p id="content">
+原生数据 
+</p>
+
+<script type="text/javascript">
+$(document).ready(function(){
+	
+	$("#btn_page1").attr('data','<p><h3>第一页</h3><h4>asdfadsgdfgfdg<h4><h4>asdfadsgdfgfdg<h4><h4>asdfadsgdfgfdg<h4><h4>asdfadsgdfgfdg<h4><h4>asdfadsgdfgfdg<h4><h4>asdfadsgdfgfdg<h4></p>');
+	$("#btn_page2").attr('data','<p><h3>第二页</h3><h4>asdfadsgdfgfdg<h4><h4>asdfadsgdfgfdg<h4><h4>asdfadsgdfgfdg<h4><h4>asdfadsgdfgfdg<h4><h4>asdfadsgdfgfdg<h4><h4>asdfadsgdfgfdg<h4></p>');
+	$("#btn_page3").attr('data','<p><h3>第三页</h3><h4>asdfadsgdfgfdg<h4><h4>asdfadsgdfgfdg<h4><h4>asdfadsgdfgfdg<h4><h4>asdfadsgdfgfdg<h4><h4>asdfadsgdfgfdg<h4><h4>asdfadsgdfgfdg<h4></p>');
+	
+	$("input").bind('click',function(){
+		$("#content").append($(this).attr('data'));
+		var id = this.id;
+		history.pushState({page:id,content:$("#content").html()},null,"#"+id);
+	});
+	
+	if (history.state){
+		$("#content").html(history.state.content);
+	}else{
+		history.replaceState({page:0,content:$("#content").html()},null,null);
+	}
+	
+	window.onpopstate = function(e){
+		if (history.state){
+			$("#content").html(history.state.content);
+		}
+	}
+});
+alert("OK");
+</script>
+
+</body>
+</html>
