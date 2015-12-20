@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+<title>使用浏览器定位功能，在百度地图上显示浏览者的位置。</title>
+<style type="text/css">  
+    html{height:100%}    
+    body{height:100%;margin:0px;padding:0px}    
+    #container{height:100%}    
+</style>
+<script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=GVzGBMroAG7ftvkMSGs7m6jL">
+//v2.0版本的引用方式：src="http://api.map.baidu.com/api?v=2.0&ak=您的密钥"
+//v1.4版本及以前版本的引用方式：src="http://api.map.baidu.com/api?v=1.4&key=您的密钥&callback=initialize"
+</script>
+</head>
+<body>
+<div id="container"></div> 
+<script type="text/javascript">
+var showError = function(msg){
+	console.log(msg);
+};
+
+var locationError = function(error){
+    switch(error.code) {
+        case error.TIMEOUT:
+            showError("A timeout occured! Please try again!");
+            break;
+        case error.POSITION_UNAVAILABLE:
+            showError('We can\'t detect your location. Sorry!');
+            break;
+        case error.PERMISSION_DENIED:
+            showError('Please allow geolocation access for this to work.');
+            break;
+        case error.UNKNOWN_ERROR:
+            showError('An unknown error occured!');
+            break;
+    }
+};
+
+var locationSuccess = function(position){
+    var coords = position.coords;
+    /*
+    var latlng = new google.maps.LatLng(
+        // 维度
+        coords.latitude,
+        // 精度
+        coords.longitude
+    );  
+    var myOptions = {  
+        // 地图放大倍数  
+        zoom: 12,  
+        // 地图中心设为指定坐标点  
+        center: latlng,  
+        // 地图类型  
+        mapTypeId: google.maps.MapTypeId.ROADMAP  
+    };  
+    // 创建地图并输出到页面  
+    var myMap = new google.maps.Map(  
+        document.getElementById("map"),myOptions  
+    );  
+    // 创建标记  
+    var marker = new google.maps.Marker({  
+        // 标注指定的经纬度坐标点  
+        position: latlng,  
+        // 指定用于标注的地图  
+        map: myMap
+    });
+    //创建标注窗口  
+    var infowindow = new google.maps.InfoWindow({  
+        content:"您在这里<br/>纬度："+  
+            coords.latitude+  
+            "<br/>经度："+coords.longitude  
+    });  
+    //打开标注窗口  
+    infowindow.open(myMap,marker); */
+    
+    console.log('经度：'+coords.longitude+' 纬度：'+coords.latitude);
+    var map = new BMap.Map("container");
+    var point = new BMap.Point(coords.longitude, coords.latitude);
+    map.centerAndZoom(point, 15);
+    
+    
+    var convertor = new BMap.Convertor();
+    var pointArr = [];
+    pointArr.push(point);
+    
+    convertor.translate(pointArr, 1, 5, function(data){
+    	if(data.status === 0) {
+            var marker = new BMap.Marker(data.points[0]);
+            map.addOverlay(marker);
+            var label = new BMap.Label("<p>使用浏览器定位功能，在百度地图上显示浏览者的位置。<br><br><h3>大C，网络定位找出我们在这里！</h3></p>",{offset:new BMap.Size(20,-10)});
+            marker.setLabel(label); //添加百度label
+            map.setCenter(data.points[0]);
+            marker.setAnimation(BMAP_ANIMATION_BOUNCE);
+          }
+    });
+};
+
+if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(locationSuccess, locationError,{
+        // 指示浏览器获取高精度的位置，默认为false
+        enableHighAccuracy: true,
+        // 指定获取地理位置的超时时间，默认不限时，单位为毫秒
+        timeout: 15000,
+        // 最长有效期，在重复获取地理位置时，此参数指定多久再次获取位置。
+        maximumAge: 3000
+    });
+}else{
+    alert("Your browser does not support Geolocation!");
+}
+</script>
+
+</body>
+</html>
